@@ -1,0 +1,469 @@
+{
+    "log": {
+        "level": "debug",
+        "timestamp": true
+    },
+    "dns": {
+        "servers": [
+            {
+                "type": "https",
+                "tag": "proxy_dns",
+                "detour": "tern",
+                "server": "1.1.1.1"
+            },
+            {
+                "type": "https",
+                "tag": "cn_dns",
+                "server": "223.6.6.6"
+            },
+            {
+                "type": "fakeip",
+                "tag": "fake_dns",
+                "inet4_range": "11.0.0.0/16",
+                "inet6_range": "3ffe::/16"
+            }
+        ],
+        "rules": [
+            {
+                "clash_mode": "direct",
+                "server": "cn_dns"
+            },
+            {
+                "clash_mode": "global",
+                "server": "fake_dns"
+            },
+            {
+                "type": "logical",
+                "mode": "or",
+                "rules": [
+                    {
+                        "domain_suffix": ["ileidian.com", ".cn"]
+                    },
+                    {
+                        "rule_set": "cnsite"
+                    }
+                ],
+                "server": "cn_dns"
+            },
+            {
+                "query_type": ["A", "AAAA"],
+                "server": "fake_dns",
+                "rewrite_ttl": 1
+            }
+        ],
+        "final": "proxy_dns"
+    },
+    "inbounds": [
+        {
+            "type": "tun",
+            "tag": "tun-in",
+            "mtu": 9000,
+            "address": ["198.18.0.1/16", "fdfe:dcba:9876::1/64"],
+            "auto_route": true,
+            "strict_route": true,
+            "stack": "mixed"
+        },
+        {
+            "type": "mixed",
+            "tag": "mixed-in",
+            "listen": "0.0.0.0",
+            "listen_port": 9393
+        }
+    ],
+    "outbounds": [
+        {
+            "type": "selector",
+            "tag": "tern",
+            "outbounds": ["cuckoo", "godwit", "gull"],
+            "default": "cuckoo"
+        },
+        {
+            "type": "selector",
+            "tag": "cuckoo",
+            "outbounds": ["urltest"],
+            "default": "urltest"
+        },
+        {
+            "type": "selector",
+            "tag": "godwit",
+            "outbounds": ["urltest"],
+            "default": "urltest"
+        },
+        {
+            "type": "selector",
+            "tag": "gull",
+            "outbounds": ["urltest"],
+            "default": "urltest"
+        },
+        {
+            "type": "selector",
+            "tag": "ai",
+            "outbounds": ["tern", "cuckoo", "godwit", "gull"],
+            "default": "tern"
+        },
+        {
+            "type": "selector",
+            "tag": "stream",
+            "outbounds": ["tern", "cuckoo", "godwit", "gull"],
+            "default": "tern"
+        },
+        {
+            "type": "selector",
+            "tag": "stream-cn",
+            "outbounds": ["tern", "cuckoo", "godwit", "gull", "apodidae"],
+            "default": "apodidae"
+        },
+        {
+            "type": "selector",
+            "tag": "apple",
+            "outbounds": ["tern", "cuckoo", "godwit", "gull", "apodidae"],
+            "default": "tern"
+        },
+        {
+            "type": "selector",
+            "tag": "apple-cn",
+            "outbounds": ["tern", "cuckoo", "godwit", "gull", "apodidae"],
+            "default": "apodidae"
+        },
+        {
+            "type": "urltest",
+            "tag": "urltest",
+            "outbounds": []
+        },
+        {
+            "type": "direct",
+            "tag": "apodidae"
+        }
+    ],
+    "route": {
+        "rules": [
+            {
+                "network": "icmp",
+                "outbound": "apodidae"
+            },
+            {
+                "action": "sniff"
+            },
+            {
+                "type": "logical",
+                "mode": "or",
+                "rules": [
+                    {
+                        "protocol": "dns"
+                    },
+                    {
+                        "port": 53
+                    }
+                ],
+                "action": "hijack-dns"
+            },
+            {
+                "protocol": "bittorrent",
+                "outbound": "apodidae"
+            },
+            {
+                "clash_mode": "direct",
+                "outbound": "apodidae"
+            },
+            {
+                "clash_mode": "global",
+                "outbound": "tern"
+            },
+            {
+                "domain_suffix": "x39x.cc",
+                "outbound": "apodidae"
+            },
+            {
+                "rule_set": "ads",
+                "action": "reject"
+            },
+            {
+                "rule_set": "ai_nonip",
+                "outbound": "ai"
+            },
+            {
+                "rule_set": "ai",
+                "outbound": "ai"
+            },
+            {
+                "rule_set": "stream_cn",
+                "outbound": "stream-cn"
+            },
+            {
+                "rule_set": "stream_nonip",
+                "outbound": "stream"
+            },
+            {
+                "rule_set": "apple_services_nonip",
+                "outbound": "apple"
+            },
+            {
+                "rule_set": "apple_ai_nonip",
+                "outbound": "apple"
+            },
+            {
+                "rule_set": "ms_nonip",
+                "outbound": "apple"
+            },
+            {
+                "rule_set": "apple_cdn_nonip",
+                "outbound": "apple-cn"
+            },
+            {
+                "rule_set": "apple_cn_nonip",
+                "outbound": "apple-cn"
+            },
+            {
+                "rule_set": "ms_cdn_nonip",
+                "outbound": "apple-cn"
+            },
+            {
+                "rule_set": "global_nonip",
+                "outbound": "tern"
+            },
+            {
+                "rule_set": "direct_nonip",
+                "outbound": "apodidae"
+            },
+            {
+                "rule_set": "domestic_nonip",
+                "outbound": "apodidae"
+            },
+            {
+                "rule_set": "gfw",
+                "outbound": "tern"
+            },
+            {
+                "rule_set": "cnsite",
+                "outbound": "apodidae"
+            },
+            {
+                "rule_set": "nocnsite",
+                "outbound": "tern"
+            },
+            {
+                "rule_set": "lan_nonip",
+                "outbound": "apodidae"
+            },
+            {
+                "rule_set": "private",
+                "outbound": "apodidae"
+            },
+            {
+                "action": "resolve"
+            },
+            {
+                "ip_is_private": true,
+                "outbound": "apodidae"
+            },
+            {
+                "rule_set": "apple_services_ip",
+                "outbound": "apple"
+            },
+            {
+                "rule_set": "stream_ip",
+                "outbound": "stream"
+            },
+            {
+                "rule_set": "china_ip",
+                "outbound": "apodidae"
+            },
+            {
+                "rule_set": "china_ipv6",
+                "outbound": "apodidae"
+            },
+            {
+                "rule_set": "cnip",
+                "outbound": "apodidae"
+            }
+        ],
+        "rule_set": [
+            {
+                "type": "remote",
+                "tag": "ads",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/category-ads-all.srs",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "ai",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/category-ai-!cn.srs",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "gfw",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/gfw.srs",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "cnsite",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/cn.srs",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "nocnsite",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/geolocation-!cn.srs",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "private",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/private.srs",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "cnip",
+                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geoip/cn.srs",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "ai_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/ai.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "stream_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/stream.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "apple_services_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/apple_services.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "apple_cn_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/apple_cn.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "apple_ai_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/apple_intelligence.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "apple_cdn_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/apple_cdn.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "ms_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/microsoft.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "ms_cdn_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/microsoft_cdn.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "global_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/global.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "direct_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/direct.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "domestic_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/domestic.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "lan_nonip",
+                "url": "https://ruleset.skk.moe/sing-box/non_ip/lan.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "apple_services_ip",
+                "url": "https://ruleset.skk.moe/sing-box/ip/apple_services.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "stream_ip",
+                "url": "https://ruleset.skk.moe/sing-box/ip/stream.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "china_ip",
+                "url": "https://ruleset.skk.moe/sing-box/ip/china_ip.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "type": "remote",
+                "tag": "china_ipv6",
+                "url": "https://ruleset.skk.moe/sing-box/ip/china_ip_ipv6.json",
+                "download_detour": "tern",
+                "update_interval": "24h0m0s"
+            },
+            {
+                "tag": "stream_cn",
+                "rules": [
+                    {
+                        "domain_suffix": ["bilibili.com", "iqiyi.com"]
+                    }
+                ]
+            }
+        ],
+        "final": "tern",
+        "auto_detect_interface": true,
+        "default_domain_resolver": "cn_dns"
+    },
+    "experimental": {
+        "cache_file": {
+            "enabled": true,
+            "store_fakeip": true
+        },
+        "clash_api": {
+            "external_controller": "0.0.0.0:9391",
+            "external_ui": "ui",
+            "external_ui_download_url": "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip",
+            "external_ui_download_detour": "tern",
+            "secret": "xx11",
+            "default_mode": "rule"
+        }
+    }
+}
