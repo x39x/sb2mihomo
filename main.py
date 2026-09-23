@@ -16,7 +16,7 @@ def anytls(clash):
     singbox["server_port"] = clash["port"]
     singbox["password"] = clash["password"]
     singbox["tls"] = {
-        "enable": True,
+        "enabled": True,
         "server_name": clash["sni"],
         "insecure": True,
         "alpn": clash["alpn"],
@@ -34,7 +34,7 @@ def vless(clash):
     singbox["uuid"] = clash["uuid"]
     singbox["flow"] = clash["flow"]
     singbox["tls"] = {
-        "enable": clash["tls"],
+        "enabled": clash["tls"],
         "server_name": clash["servername"],
         "utls": {
             "enabled": True,
@@ -57,7 +57,7 @@ def trojan(clash):
     singbox["server_port"] = clash["port"]
     singbox["password"] = clash["password"]
     singbox["tls"] = {
-        "enable": True,
+        "enabled": True,
         "server_name": clash["sni"],
         "insecure": True,
     }
