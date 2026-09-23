@@ -1,7 +1,7 @@
 import json
-import yaml
 from argparse import ArgumentParser
 
+import yaml
 
 #####################################
 # converter
