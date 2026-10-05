@@ -26,7 +26,7 @@
                 "enabled": true,
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             }
         }
@@ -50,7 +50,7 @@
                 "type": "https",
                 "tag": "proxy_dns",
                 "server": "cloudflare-dns.com",
-                "detour": "tern"
+                "detour": "albatross"
             },
             {
                 "type": "fakeip",
@@ -132,66 +132,76 @@
     "outbounds": [
         {
             "type": "selector",
-            "tag": "tern",
-            "outbounds": ["cuckoo", "godwit", "gull"],
+            "tag": "albatross",
+            "interrupt_exist_connections": true,
+            "outbounds": ["cuckoo", "godwit", "seagull"],
             "default": "cuckoo"
         },
         {
             "type": "selector",
             "tag": "cuckoo",
+            "interrupt_exist_connections": true,
             "outbounds": ["urltest"],
             "default": "urltest"
         },
         {
             "type": "selector",
             "tag": "godwit",
+            "interrupt_exist_connections": true,
             "outbounds": ["urltest"],
             "default": "urltest"
         },
         {
             "type": "selector",
-            "tag": "gull",
+            "tag": "seagull",
+            "interrupt_exist_connections": true,
             "outbounds": ["urltest"],
             "default": "urltest"
         },
         {
             "type": "selector",
             "tag": "ai",
-            "outbounds": ["tern", "cuckoo", "godwit", "gull"],
-            "default": "tern"
+            "interrupt_exist_connections": true,
+            "outbounds": ["albatross", "cuckoo", "godwit", "seagull"],
+            "default": "albatross"
         },
         {
             "type": "selector",
             "tag": "stream",
-            "outbounds": ["tern", "cuckoo", "godwit", "gull"],
-            "default": "tern"
+            "interrupt_exist_connections": true,
+            "outbounds": ["albatross", "cuckoo", "godwit", "seagull"],
+            "default": "albatross"
         },
         {
             "type": "selector",
             "tag": "stream-cn",
-            "outbounds": ["tern", "cuckoo", "godwit", "gull", "apodidae"],
-            "default": "apodidae"
+            "interrupt_exist_connections": true,
+            "outbounds": ["albatross", "cuckoo", "godwit", "seagull", "swift"],
+            "default": "swift"
         },
         {
             "type": "selector",
             "tag": "apple",
-            "outbounds": ["tern", "cuckoo", "godwit", "gull", "apodidae"],
-            "default": "tern"
+            "interrupt_exist_connections": true,
+            "outbounds": ["albatross", "cuckoo", "godwit", "seagull", "swift"],
+            "default": "albatross"
         },
         {
             "type": "selector",
             "tag": "apple-cn",
-            "outbounds": ["tern", "cuckoo", "godwit", "gull", "apodidae"],
-            "default": "apodidae"
+            "interrupt_exist_connections": true,
+            "outbounds": ["albatross", "cuckoo", "godwit", "seagull", "swift"],
+            "default": "swift"
         },
         {
             "type": "urltest",
             "tag": "urltest",
+            "interrupt_exist_connections": true,
             "outbounds": []
         },
         {
             "type": "direct",
-            "tag": "apodidae"
+            "tag": "swift"
         }
     ],
     "route": {
@@ -214,19 +224,31 @@
             },
             {
                 "clash_mode": "global",
-                "outbound": "tern"
+                "outbound": "albatross"
             },
             {
                 "clash_mode": "direct",
-                "outbound": "apodidae"
+                "outbound": "swift"
             },
             {
                 "protocol": "bittorrent",
-                "outbound": "apodidae"
+                "outbound": "swift"
             },
             {
                 "protocol": "ntp",
-                "outbound": "apodidae"
+                "outbound": "swift"
+            },
+            {
+                "rule_set": "lan_nonip",
+                "outbound": "swift"
+            },
+            {
+                "rule_set": "private",
+                "outbound": "swift"
+            },
+            {
+                "rule_set": "direct_nonip",
+                "outbound": "swift"
             },
             {
                 "rule_set": "ai_nonip",
@@ -269,36 +291,24 @@
                 "outbound": "apple"
             },
             {
-                "rule_set": "global_nonip",
-                "outbound": "tern"
+                "rule_set": "domestic_nonip",
+                "outbound": "swift"
             },
             {
-                "rule_set": "domestic_nonip",
-                "outbound": "apodidae"
+                "rule_set": "global_nonip",
+                "outbound": "albatross"
             },
             {
                 "rule_set": "gfw",
-                "outbound": "tern"
-            },
-            {
-                "rule_set": "cnsite",
-                "outbound": "apodidae"
+                "outbound": "albatross"
             },
             {
                 "rule_set": "nocnsite",
-                "outbound": "tern"
+                "outbound": "albatross"
             },
             {
-                "rule_set": "direct_nonip",
-                "outbound": "apodidae"
-            },
-            {
-                "rule_set": "lan_nonip",
-                "outbound": "apodidae"
-            },
-            {
-                "rule_set": "private",
-                "outbound": "apodidae"
+                "rule_set": "cnsite",
+                "outbound": "swift"
             },
             {
                 "rule_set": "ads",
@@ -310,7 +320,7 @@
             },
             {
                 "ip_is_private": true,
-                "outbound": "apodidae"
+                "outbound": "swift"
             },
             {
                 "rule_set": "apple_services_ip",
@@ -322,86 +332,86 @@
             },
             {
                 "rule_set": "china_ip",
-                "outbound": "apodidae"
+                "outbound": "swift"
             },
             {
                 "rule_set": "china_ipv6",
-                "outbound": "apodidae"
+                "outbound": "swift"
             },
             {
                 "rule_set": "cnip",
-                "outbound": "apodidae"
+                "outbound": "swift"
             }
         ],
         "rule_set": [
             {
                 "type": "remote",
                 "tag": "ads",
-                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/category-ads-all.srs",
+                "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ads-all.srs",
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
                 "type": "remote",
                 "tag": "ai_geosite",
-                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/category-ai-!cn.srs",
+                "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-category-ai-!cn.srs",
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
                 "type": "remote",
                 "tag": "gfw",
-                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/gfw.srs",
+                "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@refs/heads/sing/geo/geosite/gfw.srs",
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
                 "type": "remote",
                 "tag": "cnsite",
-                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/cn.srs",
+                "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-cn.srs",
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
                 "type": "remote",
                 "tag": "nocnsite",
-                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/geolocation-!cn.srs",
+                "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geosite@rule-set/geosite-geolocation-!cn.srs",
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
                 "type": "remote",
                 "tag": "private",
-                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geosite/private.srs",
+                "url": "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@refs/heads/sing/geo/geosite/private.srs",
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
                 "type": "remote",
                 "tag": "cnip",
-                "url": "https://github.com/MetaCubeX/meta-rules-dat/raw/refs/heads/sing/geo/geoip/cn.srs",
+                "url": "https://testingcf.jsdelivr.net/gh/SagerNet/sing-geoip@rule-set/geoip-cn.srs",
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -411,7 +421,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -421,7 +431,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -431,7 +441,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -441,7 +451,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -451,7 +461,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -461,7 +471,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -471,7 +481,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -481,7 +491,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -491,7 +501,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -501,7 +511,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -511,7 +521,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -521,7 +531,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -531,7 +541,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -541,7 +551,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -551,7 +561,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -561,7 +571,7 @@
                 "update_interval": "24h0m0s",
                 "http_client": {
                     "disable_version_fallback": true,
-                    "detour": "tern"
+                    "detour": "albatross"
                 }
             },
             {
@@ -573,7 +583,7 @@
                 ]
             }
         ],
-        "final": "tern",
+        "final": "albatross",
         "auto_detect_interface": true,
         "default_domain_resolver": "cn_dns"
     }
